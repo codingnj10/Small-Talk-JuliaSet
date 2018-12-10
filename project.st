@@ -24,7 +24,7 @@ Object subclass: Julia [
     ]
 
     generatePixels: max and: height and: width  and: a and: b[
-        | fileReader sendX sendY n hStep wStep radius distance c|
+        | fileReader sendX sendY oldX oldY n hStep wStep radius distance c|
         fileReader := FileStream open: 'test.ppm' mode: FileStream write.
         'P3 1920 1080 255 ' nextPutAllOn: fileReader.
 
@@ -39,8 +39,12 @@ Object subclass: Julia [
                 sendY := (radius) - (i * hStep).
                 distance := ((sendX * sendX) + (sendY * sendY)) sqrt.
                 [((distance < 2) & (n < max))] whileTrue: [
-                    sendX := (sendX exp) * (sendY cos) + a.
-                    sendY := (sendX exp) * (sendY sin) + b.
+                    oldX := sendX.
+                    oldY := sendY.
+                    sendX := (oldX * oldX) - (oldY * oldY) + a.
+                    sendY := (2 * oldX * oldY) + b.
+                    " sendX := (sendX exp) * (sendY cos) + a.
+                    sendY := (sendX exp) * (sendY sin) + b. "
                     n := n + 1.
                     distance := ((sendX * sendX) + (sendY * sendY)) sqrt.
                 ].
@@ -55,4 +59,4 @@ Object subclass: Julia [
 ]
 
 j := Julia new.
-j generatePixels: max and: width and: height and: a and: b.
+j generatePixels: max and: height and: width and: a and: b.
